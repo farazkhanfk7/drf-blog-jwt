@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Blog
+from django.http import Http404
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework import status
@@ -35,7 +36,7 @@ class UserFullView(APIView):
         return Response(serializer.data)
 
 
-@permission_classes((permissions.IsAuthenticated,))
+@permission_classes((permissions.IsAuthenticatedOrReadOnly,))
 class BlogListView(APIView):
     """
     List of all Blogs
@@ -57,7 +58,7 @@ class BlogListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@permission_classes((permissions.IsAuthenticated,)) # This decorator to be used with APIView
+@permission_classes((permissions.IsAuthenticatedOrReadOnly,)) # This decorator to be used with APIView
 class BlogDetailView(APIView):
     """
     Retrieve, update or delete a snippet instance.
@@ -73,3 +74,25 @@ class BlogDetailView(APIView):
         snippet = self.get_object(pk, request)
         serializer = BlogSerializer(snippet, context={'request': request})
         return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        snippet = self.get_object(pk, request)
+        if snippet.author == request.user or request.user.is_superuser:
+            serializer = BlogSerializer(snippet, data=request.data, context={'request': request})
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response("Unauthorised",status=status.HTTP_403_FORBIDDEN)
+
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk, request)
+        if snippet.author == request.user or request.user.is_superuser:
+            try:
+                snippet.delete()
+                return Response(data="object deleted successfully", status=status.HTTP_200_OK)
+            except:
+                return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response("Unauthorised",status=status.HTTP_403_FORBIDDEN)
+        
+
