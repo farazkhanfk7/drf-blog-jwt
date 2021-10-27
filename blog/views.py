@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from .models import Blog
 from rest_framework import viewsets
 from rest_framework import permissions
+from rest_framework import status
 from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
 from django.contrib.auth.models import User
@@ -47,6 +48,13 @@ class BlogListView(APIView):
         queryset = self.get_queryset(request)
         serializer = BlogSerializer(queryset, many=True,context={'request': request})
         return Response(serializer.data)
+
+    def post(self,request,*args,**kwargs):
+        serializer = BlogSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save(author=request.user)
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @permission_classes((permissions.IsAuthenticated,)) # This decorator to be used with APIView
