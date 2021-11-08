@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+<!--Did this because title keyword was already used for some other purpose-->
+<!-- it shows a weird yellow line -->
+{% block titlename%}Delete Item{% endblock titlename%}
+
+{% block content %}
+<!-- bradcam_area  -->
+<div class="m-5">
+  <div class="container card text-center p-4 col-10">
+<h1>{% trans "Delete Item" %}</h1>
+
+<p>Are you want to delete {{object.title}} ?</p>
+
+<form method="post">
+  {% csrf_token %}
+  {% if redirect_field_value %}
+  <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+  {% endif %}
+  <button class="btn btn-danger m-2" type="submit">{% trans 'Delete' %}</button>
+  <a href="{{object.get_absolute_url}}" class="btn btn-info m-2" >{% trans 'Cancel' %}</a>
+</form>
+</div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}<title>New Blog</title>{% endblock%}
+
+{% block content %}
+
+<div style="margin-bottom:200px;" class="container card my-4 mx-auto col-10">
+<div class="container p-4">
+    <h2>Add a Hospital</h2>
+    <div class="alert alert-success my-3"  role="alert">
+        Write whatever you want !!
+    </div>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form | crispy }}
+        <input class="btn btn-info" type="submit">
+    </form>
+    </div>
+</div>
+
+
+{% endblock content %}

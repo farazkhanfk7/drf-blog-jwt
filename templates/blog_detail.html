@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}
+<title>Batblogger - {{object.title}}</title>
+{% endblock title %}
+
+{% block content %}
+
+<div style="margin-bottom:200px;" class="container">
+<div class="card my-5">
+    <div class="card-header">
+        <h3 class="d-inline">{{object.title}}</h3>
+        {% if object.author == user %}
+         <div class="d-inline float-right">
+             <a class="ml-2 btn btn-secondary btn-sm" href="{{object.get_edit_url}}">Edit</a>
+             <a class="ml-2 btn btn-danger btn-sm" href="{{object.get_delete_url}}" >Delete</a>
+         </div>
+        {% endif %}
+    </div>
+    <div class="card-body">
+      <blockquote class="blockquote mb-0">
+        {{object.content}}
+        <footer class="ml-5 blockquote-footer">{{object.author}} on {{object.created_on}}</footer>
+      </blockquote>
+    </div>
+</div>
+</div>
+{% endblock content %}
