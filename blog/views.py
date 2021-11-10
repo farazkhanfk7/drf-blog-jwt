@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from .serializers import RegisterSerializer
+from rest_framework import generics
 from .models import Blog
 from django.http import Http404
 from rest_framework import viewsets
@@ -94,5 +96,9 @@ class BlogDetailView(APIView):
             except:
                 return Response(status=status.HTTP_204_NO_CONTENT)
         return Response("Unauthorised",status=status.HTTP_403_FORBIDDEN)
-        
 
+        
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = RegisterSerializer
