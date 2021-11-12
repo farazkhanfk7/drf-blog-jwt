@@ -30,7 +30,7 @@
         <div class="card-body">
           <h5 class="card-text">{{blog.content}}....</h5>
           <div class="row mx-1 my-3">
-            <h6 class="card-title ml-1"><a href="#">{{blog.author}}</a> on {{blog.created_on}}</h6>
+            <h6 class="card-title ml-1"><a href="{% url 'profile' blog.author %}">{{blog.author}}</a> on {{blog.created_on}}</h6>
           </div> 
           <a href="{% url 'ui-blog-detail' blog.id %}" class="btn btn-primary">Read full blog</a>
         </div>

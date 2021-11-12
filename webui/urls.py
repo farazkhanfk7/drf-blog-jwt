@@ -1,7 +1,7 @@
 from django.urls import path,include
 from django.contrib.auth import views as auth_views
 from .views import ( BlogView, BlogDetailView, BlogCreateView, BlogUpdateView, BlogDeleteView,
-                     RegisterView, LoginView, LogoutView, ProfileView )
+                     RegisterView, LoginView, LogoutView, ProfileView, EditProfileView )
 
 urlpatterns = [
     path('',BlogView.as_view(),name='home'),
@@ -13,6 +13,7 @@ urlpatterns = [
     path('edit/<int:pk>/',BlogUpdateView.as_view(),name='ui-blog-edit'),
     path('delete/<int:pk>/',BlogDeleteView.as_view(),name='ui-blog-delete'),
     path('profile/<str:username>/', ProfileView.as_view(), name='profile'),
+    path('editprofile/<str:username>/', EditProfileView, name='edit-profile'),
 ]
 
 # there is a way to login using inbuilt auth views

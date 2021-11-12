@@ -1,3 +1,4 @@
+import os
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
@@ -5,9 +6,10 @@ from django.views.generic import View, ListView,DetailView,CreateView,UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from blog.models import Blog, Profile
 from django.core.exceptions import PermissionDenied
-from .forms import UserRegisterForm, LoginForm
+from .forms import UserRegisterForm, LoginForm, EditProfileForm
 from django.contrib import messages
 from django.contrib.auth import authenticate,logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import auth
 
 
@@ -62,6 +64,36 @@ class ProfileView(LoginRequiredMixin, View):
         profile = Profile.objects.get(user__username=username)
         posts = Blog.objects.filter(author__username=username)
         return render(request, 'profile.html', {'profile': profile,'posts':posts})
+
+
+@login_required
+def EditProfileView(request, username):
+    if username == request.user.username:
+        profile = Profile.objects.get(user__username=username)
+        image_path = profile.image.path
+        if request.method == 'GET':
+            form = EditProfileForm(instance=profile)
+        else:
+            form = EditProfileForm(request.POST, request.FILES, instance=profile)
+            if form.is_valid():
+                if 'default.jpg' in str(image_path):
+                    form.save()
+                # the `form.save` will also update the newest image & path.
+                else:
+                    profile = form.save(commit=False)
+                    image_posted = form.cleaned_data.get('image')
+                    try:
+                        image_posted_path = getattr(image_posted,'path')
+                        if image_path == image_posted_path:
+                            profile.save()
+                    except:
+                        if os.path.exists(image_path):
+                            os.remove(image_path)
+                        profile.save()      
+                messages.success(request, 'Profile updated successfully')
+                return redirect(f'/profile/{username}/')
+        return render(request, 'edit_profile.html', {'profile': profile,'form':form})
+    raise PermissionDenied
 
 
 

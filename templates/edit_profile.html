@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}<title>Edit Profile</title>{% endblock%}
+
+{% block content %}
+
+<div class="container m-auto">
+  <div class="container my-4">
+    <div style="margin-bottom:200px;" class="container">
+
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="m-4 text-center">
+                  <img src="{{profile.image.url}}" width="200" height="200" alt="" class="rounded-circle img-fluid">
+                </div>
+                <div class="ml-2 col-12 col-lg-8 col-md-6">
+                  <h3 class="mt-5 mb-0 text-truncated">{{profile.user}}</h3>
+                  <p>
+                    {{profile.bio}}
+                  </p>
+                  <p>
+                    Location : {{profile.location}}
+                  </p>
+                  <p> <span class="badge badge-info tags">blog</span>
+                    <span class="badge badge-info tags">articles</span>
+                    <span class="badge badge-info tags">about</span>
+                  </p>
+                </div>
+              </div>
+              <div class="col-12">
+                <form method="POST" enctype="multipart/form-data">
+                  {% csrf_token %}
+                  {{ form | crispy }}
+                  <input class="btn btn-info" type="submit">
+              </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock content %}
