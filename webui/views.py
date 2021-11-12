@@ -1,8 +1,9 @@
+from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.views.generic import View, ListView,DetailView,CreateView,UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from blog.models import Blog
+from blog.models import Blog, Profile
 from django.core.exceptions import PermissionDenied
 from .forms import UserRegisterForm, LoginForm
 from django.contrib import messages
@@ -54,21 +55,30 @@ class BlogDeleteView(LoginRequiredMixin, DeleteView):
         return super(BlogDeleteView, self).dispatch(request, *args, **kwargs)
     
 
+class ProfileView(LoginRequiredMixin, View):
+    def get(self,request,*args,**kwargs):
+        # we can use get_context_data for this if using detail view
+        username = kwargs['username']
+        profile = Profile.objects.get(user__username=username)
+        posts = Blog.objects.filter(author__username=username)
+        return render(request, 'profile.html', {'profile': profile,'posts':posts})
+
+
+
 class RegisterView(View):
     def get(self, request):
         form = UserRegisterForm()
         return render(request, 'auth/register.html', {'form': form})
 
     def post(self, request):
-        if request.method == 'POST':
-            form = UserRegisterForm(request.POST)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Your account has been created! Your are now able to login.")
-                return redirect('/')
-            else:
-                messages.warning(request, "Error while registering. Please signup again.")
-                return redirect('register/')
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your account has been created! Your are now able to login.")
+            return redirect('/')
+        else:
+            messages.warning(request, "Error while registering. Please signup again.")
+            return redirect('register/')
 
 class LoginView(View):
     def get(self, request):
